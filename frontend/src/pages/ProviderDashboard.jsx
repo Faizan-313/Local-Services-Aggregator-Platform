@@ -1,5 +1,5 @@
 "use client"
-
+import React from "react"
 import { useServices } from "../contexts/ServiceContext"
 import { useAuth } from "../contexts/AuthContext"
 import { Link } from "react-router-dom"
@@ -8,7 +8,7 @@ function ProviderDashboard() {
   const { services } = useServices()
   const { user } = useAuth()
   
-  const providerServices = services.filter(service => service.providerId === user?.id)
+  const providerServices = services.filter(service => service.provider_id === user?.id)
 
   return (
     <div className="p-6">
