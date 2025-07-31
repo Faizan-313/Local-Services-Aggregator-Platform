@@ -16,7 +16,6 @@ export default function ServiceProviderList() {
   });
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-
   useEffect(() => {
     const initialFilters = { ...filters, category: serviceName };
     const results = searchServices(searchQuery, initialFilters);

@@ -61,7 +61,7 @@ function Navbar() {
                 </div>
 
                 {/* Dropdown */}
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
+                <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 group-hover:opacity-100 group-hover:translate-y-1  group-hover:pointer-events-auto z-50">
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
