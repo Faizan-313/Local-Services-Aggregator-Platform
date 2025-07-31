@@ -16,7 +16,7 @@ import ServiceDetail from "./pages/ServiceDetail"
 // import Profile from "./pages/Profile"
 import AddService from "./pages/addService"
 import ServiceProviders from "./pages/ServiceProviders";
-import "./App.css"
+import './App.css'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()

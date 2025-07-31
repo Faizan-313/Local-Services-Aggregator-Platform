@@ -14,13 +14,20 @@ export default function ServiceProviderList() {
     minPrice: searchParams.get("minPrice") || "",
     maxPrice: searchParams.get("maxPrice") || "",
   });
+
+  // useEffect(() => {
+  //   setFilters((prev) => ({ ...prev, category: serviceName }));
+  // }, [serviceName]);
+
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-  useEffect(() => {
-    const initialFilters = { ...filters, category: serviceName };
-    const results = searchServices(searchQuery, initialFilters);
+
+    useEffect(() => {
+    const results = searchServices(searchQuery, filters);
     setFilteredProviders(results);
-  }, [searchQuery, filters, services, serviceName]);
+    // console.log("results",results)
+  }, [searchQuery, filters, services]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -45,6 +52,7 @@ export default function ServiceProviderList() {
     setFilters({ location: "", minPrice: "", maxPrice: "" });
     setSearchParams({});
   };
+  // console.log(filteredProviders)
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
