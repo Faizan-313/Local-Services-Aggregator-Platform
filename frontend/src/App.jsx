@@ -12,10 +12,9 @@ import ProviderDashboard from "./pages/ProviderDashboard"
 import CustomerDashboard from "./pages/CustomerDashboard"
 import Services from "./pages/Services"
 import ServiceDetail from "./pages/ServiceDetail"
-// import BookingPage from "./pages/BookingPage"
-// import Profile from "./pages/Profile"
 import AddService from "./pages/addService"
 import ServiceProviders from "./pages/ServiceProviders";
+import BookingPage from "./pages/Booking"
 import './App.css'
 
 function ProtectedRoute({ children }) {
@@ -34,7 +33,8 @@ function AppContent() {
       <Route path="/services" element={<Services />} />
       <Route path="/add-service" element={<AddService />} />
       <Route path="/service/:id" element={<ServiceDetail />} />
-        <Route path="/services/:serviceName" element={<ServiceProviders />} />
+      <Route path="/services/:serviceName" element={<ServiceProviders />} />
+      <Route path="/book/:serviceId" element={<ProtectedRoute> <BookingPage /></ProtectedRoute>} />
       <Route
         path="/dashboard"
         element={
