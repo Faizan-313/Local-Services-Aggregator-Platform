@@ -18,12 +18,13 @@ app.use(express.urlencoded({extended: true}));
 
 
 //routes
-import authRoute from "./routes/auth.routes.js"
-import listingRoute from "./routes/listings.routes.js"
-import bookingRoute from "./routes/booking.routes.js"
-import bookingRoute from "./routes/bookings.routes.js"
+import authRoute from "./routes/auth.routes.js";
+import listingRoute from "./routes/listings.routes.js";
+import bookingRoute from "./routes/bookings.routes.js";
 
-app.use('/api/auth', authRoute)
+app.use('/api/auth', authRoute);
+app.use('/api',listingRoute);
+app.use('/api',bookingRoute);
 
 app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`)
