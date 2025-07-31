@@ -1,5 +1,5 @@
 "use client"
-
+import React from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { AuthProvider, useAuth } from "./contexts/AuthContext"
 import { ServiceProvider } from "./contexts/ServiceContext"
@@ -9,7 +9,7 @@ import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 // import Dashboard from "./pages/Dashboard"
-// import Services from "./pages/Services"
+import Services from "./pages/Services"
 // import ServiceDetail from "./pages/ServiceDetail"
 // import BookingPage from "./pages/BookingPage"
 // import Profile from "./pages/Profile"
@@ -33,7 +33,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  {/* <Route path="/services" element={<Services />} /> */}
+                  <Route path="/services" element={<Services />} />
                   {/* <Route path="/service/:id" element={<ServiceDetail />} /> */}
                   <Route
                     path="/dashboard"

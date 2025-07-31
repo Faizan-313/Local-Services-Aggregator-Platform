@@ -1,4 +1,5 @@
 "use client"
+import React from "react"
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -43,7 +44,7 @@ function Login() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page flex">
       <div className="auth-container">
         <div className="auth-header">
           <LogIn className="auth-icon" />
