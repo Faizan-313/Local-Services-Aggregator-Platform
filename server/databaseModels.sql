@@ -78,4 +78,3 @@ CREATE TABLE reviews (
   FOREIGN KEY (listing_id) REFERENCES service_listings(id) ON DELETE CASCADE,
   FOREIGN KEY (customer_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
