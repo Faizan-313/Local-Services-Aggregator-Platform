@@ -14,6 +14,7 @@ import Services from "./pages/Services"
 // import ServiceDetail from "./pages/ServiceDetail"
 // import BookingPage from "./pages/BookingPage"
 // import Profile from "./pages/Profile"
+import ServiceProviders from "./pages/ServiceProviders";
 import "./App.css"
 
 function ProtectedRoute({ children }) {
@@ -31,6 +32,7 @@ function AppContent() {
       <Route path="/register" element={<Register />} />
       <Route path="/services" element={<Services />} />
       {/* <Route path="/service/:id" element={<ServiceDetail />} /> */}
+        <Route path="/services/:serviceName" element={<ServiceProviders />} />
       <Route
         path="/dashboard"
         element={

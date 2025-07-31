@@ -1,13 +1,13 @@
 "use client"
 import React from "react"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useState } from "react"
 
 const ServiceContext = createContext()
 
-export function useServices() {
-  return useContext(ServiceContext)
-}
+// export function useServices() {
+//   return useContext(ServiceContext)
+// }
 
 export function ServiceProvider({ children }) {
   const [services, setServices] = useState([
@@ -94,22 +94,21 @@ export function ServiceProvider({ children }) {
   }
 
   const searchServices = (query, filters = {}) => {
-    return services.filter((service) => {
+    return services.filter(service => {
       const matchesQuery =
         !query ||
         service.title.toLowerCase().includes(query.toLowerCase()) ||
-        service.category.toLowerCase().includes(query.toLowerCase()) ||
-        service.location.toLowerCase().includes(query.toLowerCase())
+        service.service_name.toLowerCase().includes(query.toLowerCase()) ||
+        service.city.toLowerCase().includes(query.toLowerCase())
 
-      const matchesCategory = !filters.category || service.category === filters.category
-      const matchesLocation =
-        !filters.location || service.location.toLowerCase().includes(filters.location.toLowerCase())
+      const matchesCategory = !filters.category || service.service_name === filters.category
+      const matchesCity = !filters.city || service.city.toLowerCase().includes(filters.city.toLowerCase())
       const matchesPrice =
         (!filters.minPrice || service.price >= filters.minPrice) &&
         (!filters.maxPrice || service.price <= filters.maxPrice)
-      const matchesRating = !filters.minRating || service.rating >= filters.minRating
+      const matchesRating = !filters.minRating || service.average_rating >= filters.minRating
 
-      return matchesQuery && matchesCategory && matchesLocation && matchesPrice && matchesRating
+      return matchesQuery && matchesCategory && matchesCity && matchesPrice && matchesRating
     })
   }
 
@@ -118,8 +117,12 @@ export function ServiceProvider({ children }) {
     categories,
     addService,
     addReview,
-    searchServices,
+    searchServices
   }
 
-  return <ServiceContext.Provider value={value}>{children}</ServiceContext.Provider>
+  return (
+    <ServiceContext.Provider value={value}>
+      {children}
+    </ServiceContext.Provider>
+  )
 }

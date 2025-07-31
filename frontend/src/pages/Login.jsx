@@ -97,19 +97,6 @@ function Login() {
             Don't have an account? <Link to="/register">Sign up</Link>
           </p>
         </div>
-
-        <div className="demo-credentials">
-          <h3>Demo Credentials:</h3>
-          <p>
-            <strong>Service Provider:</strong> provider@test.com
-          </p>
-          <p>
-            <strong>Customer:</strong> customer@test.com
-          </p>
-          <p>
-            <strong>Password:</strong> Any password
-          </p>
-        </div>
       </div>
     </div>
   )
