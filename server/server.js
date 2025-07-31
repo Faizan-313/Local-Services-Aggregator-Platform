@@ -21,15 +21,11 @@ app.use(express.urlencoded({extended: true}));
 import authRoute from "./routes/auth.routes.js";
 import listingRoute from "./routes/listings.routes.js";
 import bookingRoute from "./routes/bookings.routes.js";
-
-
 import reviewRoute from "./routes/reviews.routes.js"
 
 app.use('/api/auth', authRoute);
 app.use('/api',listingRoute);
-app.use('/api',bookingRoute);;
-
-
+app.use('/api',bookingRoute);
 app.use('/api',reviewRoute);
 
 app.listen(port, ()=>{

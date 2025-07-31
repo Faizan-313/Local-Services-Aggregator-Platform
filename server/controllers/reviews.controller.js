@@ -51,10 +51,10 @@ export const getListingReviews = async (req, res) => {
     try {
         const [reviews] = await db.query(
             `SELECT r.id, r.rating, r.comment, r.created_at, u.name AS customer_name
-             FROM reviews r
-             JOIN users u ON r.customer_id = u.id
-             WHERE r.listing_id = ?
-             ORDER BY r.created_at DESC`,
+                FROM reviews r
+                JOIN users u ON r.customer_id = u.id
+                WHERE r.listing_id = ?
+                ORDER BY r.created_at DESC`,
             [listingId]
         );
         res.json(reviews);
