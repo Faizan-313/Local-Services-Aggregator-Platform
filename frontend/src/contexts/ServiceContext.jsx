@@ -1,5 +1,6 @@
 "use client"
 import React from "react"
+
 import { createContext, useState } from "react"
 
 const ServiceContext = createContext()
@@ -114,11 +115,9 @@ export function ServiceProvider({ children }) {
   const value = {
     services,
     categories,
-    loading,
     addService,
     addReview,
-    searchServices,
-    refreshServices
+    searchServices
   }
 
   return (
