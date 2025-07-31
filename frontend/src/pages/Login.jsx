@@ -31,13 +31,13 @@ function Login() {
 
     try {
       const result = await login(formData.email, formData.password)
-      if (result.success) {
+      if (result && result.success) {
         navigate("/dashboard")
       } else {
-        setError(result.error)
+        setError(result?.error || "Login failed")
       }
     } catch (err) {
-      setError("An error occurred during login")
+      setError(err?.message || "An error occurred during login")
     } finally {
       setLoading(false)
     }

@@ -33,13 +33,13 @@ function Register() {
 
     try {
       const result = await register(formData)
-      if (result.success) {
+      if (result && result.success) {
         navigate("/dashboard")
       } else {
-        setError(result.error)
+        setError(result?.error || "Registration failed")
       }
     } catch (err) {
-      setError("An error occurred during registration")
+      setError(err?.message || "An error occurred during registration")
     } finally {
       setLoading(false)
     }
