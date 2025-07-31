@@ -162,6 +162,7 @@ export default function ServiceProviderList() {
               <p className="text-sm text-gray-600">Price: ₹{provider.price}</p>
               <p className="text-sm text-gray-600">Rating: {provider.rating || "N/A"}</p>
 
+<<<<<<< HEAD
               <div className="mt-4 flex gap-2">
                 {user && (
                   <>
@@ -178,6 +179,16 @@ export default function ServiceProviderList() {
                       View Details
                     </a>
                   </>
+=======
+              <div className="mt-4">
+                {user?.role === "customer" && (
+                  <a
+                    href={`/book/${provider.id}?customerId=${user.id}`}
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                    Book Now
+                  </a>
+>>>>>>> 9c13a05233ce1986d8638eee860733b96a3c9e34
                 )}
               </div>
             </div>
