@@ -1,97 +1,96 @@
 "use client"
-import React, { createContext, useContext, useState, useEffect } from "react"
+import React from "react"
+
+import { createContext, useState } from "react"
 
 const ServiceContext = createContext()
 
-export function useServices() {
-  return useContext(ServiceContext)
-}
+// export function useServices() {
+//   return useContext(ServiceContext)
+// }
 
 export function ServiceProvider({ children }) {
-  const [services, setServices] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [services, setServices] = useState([
+    {
+      id: 1,
+      providerId: 1,
+      providerName: "John Provider",
+      title: "Professional Electrical Services",
+      category: "Electrician",
+      description: "Licensed electrician with 10+ years experience",
+      price: 75,
+      location: "New York, NY",
+      rating: 4.8,
+      reviews: [{ id: 1, userId: 2, userName: "Jane Customer", rating: 5, comment: "Excellent work!" }],
+      availability: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      image: "/placeholder.svg?height=200&width=300",
+    },
+    {
+      id: 2,
+      providerId: 1,
+      providerName: "Sarah Wilson",
+      title: "Math & Science Tutoring",
+      category: "Tutor",
+      description: "Experienced tutor for high school and college students",
+      price: 50,
+      location: "Los Angeles, CA",
+      rating: 4.9,
+      reviews: [],
+      availability: ["Monday", "Wednesday", "Friday", "Saturday"],
+      image: "/placeholder.svg?height=200&width=300",
+    },
+    {
+      id: 3,
+      providerId: 1,
+      providerName: "Mike Johnson",
+      title: "Residential Plumbing Services",
+      category: "Plumber",
+      description: "Fast and reliable plumbing repairs and installations",
+      price: 85,
+      location: "Chicago, IL",
+      rating: 4.6,
+      reviews: [],
+      availability: ["Tuesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      image: "/placeholder.svg?height=200&width=300",
+    },
+  ])
 
-  const backendUrl = import.meta.env.VITE_SERVER_API_URL
+  const [categories] = useState([
+    "Electrician",
+    "Plumber",
+    "Tutor",
+    "Home Cleaning",
+    "Fitness Trainer",
+    "Handyman",
+    "Gardener",
+    "Painter",
+  ])
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        // console.log(`${backendUrl}/listings`)
-        const res = await fetch(`${backendUrl}/listings`, {
-          method: "GET",
-          credentials: "include"
-        })
-        if (!res.ok) throw new Error("Failed to fetch services")
-        const data = await res.json()
-        // console.log("Fetched services:", data)
-        setServices(data)
+  const addService = (serviceData) => {
+    const newService = {
+      id: Date.now(),
+      ...serviceData,
+      rating: 0,
+      reviews: [],
+    }
+    setServices((prev) => [...prev, newService])
+  }
 
-        if (Array.isArray(data)) {
-          const cats = [...new Set(data.map(item => item.service_name))]
-          setCategories(cats)
+  const addReview = (serviceId, review) => {
+    setServices((prev) =>
+      prev.map((service) => {
+        if (service.id === serviceId) {
+          const newReviews = [...service.reviews, { ...review, id: Date.now() }]
+          const newRating = newReviews.reduce((sum, r) => sum + r.rating, 0) / newReviews.length
+          return {
+            ...service,
+            reviews: newReviews,
+            rating: Math.round(newRating * 10) / 10,
+          }
         }
-      } catch (error) {
-        console.error("Fetch services error:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchServices()
-  }, [backendUrl])
-
-  const addService = async (serviceData) => {
-    try {
-      const res = await fetch(`${backendUrl}/listings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(serviceData)
-      })
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.message || "Failed to add service")
-      }
-      await refreshServices()
-      return { success: true }
-    } catch (error) {
-      console.error("Add service error:", error)
-      return { success: false, error: error.message }
-    }
-  }
-
-  const addReview = async (listingId, rating, comment) => {
-    try {
-      const res = await fetch(`${backendUrl}/reviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ listingId, rating, comment })
-      })
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.message || "Failed to add review")
-      }
-      await refreshServices()
-      return { success: true }
-    } catch (error) {
-      console.error("Add review error:", error)
-      return { success: false, error: error.message }
-    }
-  }
-
-  const refreshServices = async () => {
-    try {
-      const res = await fetch(`${backendUrl}/listings`, {
-        method: "GET",
-        credentials: "include"
-      })
-      if (!res.ok) throw new Error("Failed to refresh services")
-      const data = await res.json()
-      setServices(data)
-    } catch (error) {
-      console.error("Refresh services error:", error)
-    }
+        return service
+      }),
+    )
   }
 
   const searchServices = (query, filters = {}) => {
@@ -116,11 +115,9 @@ export function ServiceProvider({ children }) {
   const value = {
     services,
     categories,
-    loading,
     addService,
     addReview,
-    searchServices,
-    refreshServices
+    searchServices
   }
 
   return (
