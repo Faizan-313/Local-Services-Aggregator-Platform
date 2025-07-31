@@ -1,33 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useServices } from "../contexts/ServiceContext";
 import { Search, Filter } from "lucide-react";
 
 export default function ServiceProviderList() {
   const { serviceName } = useParams();
-  const { services, searchServices } = useServices();
   const [searchParams, setSearchParams] = useSearchParams();
+  const backendUrl = import.meta.env.VITE_SERVER_API_URL; // get your backend URL
 
+  const [categoryServices, setCategoryServices] = useState([]);
+  const [filteredProviders, setFilteredProviders] = useState([]);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [filters, setFilters] = useState({
     location: searchParams.get("location") || "",
     minPrice: searchParams.get("minPrice") || "",
     maxPrice: searchParams.get("maxPrice") || "",
   });
-
-  // useEffect(() => {
-  //   setFilters((prev) => ({ ...prev, category: serviceName }));
-  // }, [serviceName]);
-
-  const [filteredProviders, setFilteredProviders] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
-    useEffect(() => {
-    const results = searchServices(searchQuery, filters);
-    setFilteredProviders(results);
-    // console.log("results",results)
-  }, [searchQuery, filters, services]);
+  // 🟢 Fetch providers by category when serviceName changes
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (serviceName) params.append("category", serviceName.toLowerCase());
 
+        const url = `${backendUrl}/listings?${params.toString()}`;
+        const res = await fetch(url, { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch providers");
+
+        const data = await res.json();
+        setCategoryServices(data);
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+      }
+    };
+
+    fetchProviders();
+  }, [serviceName, backendUrl]);
+
+  // 🟢 Apply local search / price / location filters
+  useEffect(() => {
+    const filtered = categoryServices.filter((service) => {
+      const matchesQuery =
+        !searchQuery ||
+        service.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        service.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesLocation =
+        !filters.location ||
+        service.location?.toLowerCase().includes(filters.location.toLowerCase());
+
+      const matchesMinPrice =
+        !filters.minPrice || Number(service.price) >= Number(filters.minPrice);
+
+      const matchesMaxPrice =
+        !filters.maxPrice || Number(service.price) <= Number(filters.maxPrice);
+
+      return matchesQuery && matchesLocation && matchesMinPrice && matchesMaxPrice;
+    });
+
+    setFilteredProviders(filtered);
+  }, [categoryServices, searchQuery, filters]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -52,106 +85,124 @@ export default function ServiceProviderList() {
     setFilters({ location: "", minPrice: "", maxPrice: "" });
     setSearchParams({});
   };
-  // console.log(filteredProviders)
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold capitalize">{serviceName} Providers</h1>
-          <p className="text-gray-600">Search and filter the best service providers</p>
-        </div>
-
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="flex flex-wrap gap-2 items-center justify-center mb-6">
-          <div className="flex items-center border rounded px-3 py-2 bg-white w-full max-w-md">
-            <Search className="text-gray-400 mr-2" />
-            <input
-              type="text"
-              placeholder="Search providers or locations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full outline-none"
-            />
-          </div>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-            Search
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center border px-4 py-2 rounded"
-          >
-            <Filter className="mr-1" /> Filters
-          </button>
-        </form>
-
-        {/* Filters */}
-        {showFilters && (
-          <div className="bg-white shadow rounded-lg p-4 mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block mb-1 text-sm font-medium">Location</label>
-                <input
-                  type="text"
-                  placeholder="City or area"
-                  value={filters.location}
-                  onChange={(e) => handleFilterChange("location", e.target.value)}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 text-sm font-medium">Min Price</label>
-                <input
-                  type="number"
-                  placeholder="0"
-                  value={filters.minPrice}
-                  onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 text-sm font-medium">Max Price</label>
-                <input
-                  type="number"
-                  placeholder="1000"
-                  value={filters.maxPrice}
-                  onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-            </div>
-            <div className="mt-4 flex gap-3">
-              <button onClick={updateSearchParams} className="bg-green-600 text-white px-4 py-2 rounded">
-                Apply Filters
-              </button>
-              <button onClick={clearFilters} className="bg-gray-300 px-4 py-2 rounded">
-                Clear All
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProviders.map((provider) => (
-            <div key={provider.id} className="bg-white rounded-lg shadow p-4">
-              <h3 className="text-xl font-semibold mb-1">{provider.title}</h3>
-              <p className="text-gray-700 mb-1">{provider.description}</p>
-              <p className="text-sm text-gray-600">Location: {provider.location}</p>
-              <p className="text-sm text-gray-600">Price: ₹{provider.price}</p>
-              <p className="text-sm text-gray-600">Rating: {provider.rating || "N/A"}</p>
-            </div>
-          ))}
-        </div>
-
-        {filteredProviders.length === 0 && (
-          <div className="text-center text-gray-500 mt-8">
-            <h3 className="text-lg font-semibold">No providers found</h3>
-            <p>Try adjusting your filters or search</p>
-          </div>
-        )}
+  <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="max-w-7xl mx-auto">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-gray-800 capitalize">
+          {serviceName} Providers
+        </h1>
+        <p className="text-gray-500">Search and filter the best service providers</p>
       </div>
+
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-wrap items-center justify-center gap-3 mb-8"
+      >
+        <div className="flex items-center bg-white border rounded-md shadow-sm px-3 py-2 w-full max-w-md">
+          <Search className="text-gray-400 mr-2" />
+          <input
+            type="text"
+            placeholder="Search providers or locations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full text-gray-700 placeholder-gray-400 outline-none"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-100 transition"
+        >
+          <Filter className="mr-1" /> Filters
+        </button>
+      </form>
+
+      {showFilters && (
+        <div className="bg-white shadow rounded-lg p-5 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Location</label>
+              <input
+                type="text"
+                placeholder="City or area"
+                value={filters.location}
+                onChange={(e) => handleFilterChange("location", e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Min Price</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Max Price</label>
+              <input
+                type="number"
+                placeholder="1000"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+          </div>
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={updateSearchParams}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+            >
+              Apply Filters
+            </button>
+            <button
+              onClick={clearFilters}
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProviders.map((provider) => (
+          <div
+            key={provider.id}
+            className="bg-white rounded-lg shadow hover:shadow-md transition p-5 flex flex-col justify-between"
+          >
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-1">{provider.title}</h3>
+              <p className="text-gray-600 mb-2">{provider.description}</p>
+            </div>
+            <div className="text-sm text-gray-500 space-y-1 mt-2">
+              <p>Location: {provider.location}</p>
+              <p>Price: ₹{provider.price}</p>
+              <p>Rating: {provider.rating || "N/A"}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filteredProviders.length === 0 && (
+        <div className="text-center text-gray-500 mt-10">
+          <h3 className="text-lg font-semibold">No providers found</h3>
+          <p>Try adjusting your filters or search</p>
+        </div>
+      )}
     </div>
-  );
+  </div>
+)
+
 }

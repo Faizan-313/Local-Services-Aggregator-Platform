@@ -23,7 +23,6 @@ function CustomerDashboard() {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Welcome, {user?.name} 👋</h1>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-purple-100 p-4 rounded-xl shadow">
           <h2 className="text-xl font-semibold">Total Bookings</h2>
