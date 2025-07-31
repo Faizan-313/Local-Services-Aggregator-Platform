@@ -5,12 +5,10 @@ export const createListing = async (req, res) => {
     const providerId = req.user.userId; 
     const { title, description, price, city, serviceName, availability } = req.body;
 
-    // Validate required fields
     if (!title || !price || !city || !serviceName || !Array.isArray(availability)) {
         return res.status(400).json({ message: "Missing required fields or invalid availability format" });
     }
 
-    // Validate days
     const validDays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
     for (const day of availability) {
         if (!validDays.includes(day.toLowerCase())) {
@@ -19,7 +17,6 @@ export const createListing = async (req, res) => {
     }
 
     try {
-        // Find the service_id for the given serviceName
         const [serviceRows] = await db.query(
             "SELECT id FROM services WHERE name = ?",
             [serviceName]
