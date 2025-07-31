@@ -26,10 +26,17 @@ function Register() {
     })
   }
 
+  const isValidEmailFormat = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+
+    if (!isValidEmailFormat(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
     try {
       const result = await register(formData)

@@ -22,9 +22,12 @@ function CustomerDashboard() {
         <div className="bg-pink-100 p-4 rounded-xl shadow">
           <h2 className="text-xl font-semibold">Upcoming Services</h2>
           <p className="text-2xl">
-            {bookings.filter(b => new Date(b.booking_date) >= new Date()).length}
+            {bookings.filter(
+              b => new Date(b.booking_date) >= new Date() && b.status !== "rejected"
+            ).length}
           </p>
         </div>
+
         <div className="bg-orange-100 p-4 rounded-xl shadow">
           <h2 className="text-xl font-semibold">Completed</h2>
           <p className="text-2xl">
@@ -46,12 +49,12 @@ function CustomerDashboard() {
               <p className="text-gray-600 text-sm">Price: ₹{b.price}</p>
               <p
                 className={`text-sm font-medium ${b.status === "pending"
-                    ? "text-yellow-600"
-                    : b.status === "accepted"
-                      ? "text-green-600"
-                      : b.status === "rejected"
-                        ? "text-red-600"
-                        : "text-gray-600"
+                  ? "text-yellow-600"
+                  : b.status === "accepted"
+                    ? "text-green-600"
+                    : b.status === "rejected"
+                      ? "text-red-600"
+                      : "text-gray-600"
                   }`}
               >
                 {b.status}

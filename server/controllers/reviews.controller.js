@@ -2,58 +2,58 @@ import db from "../database/db.js";
 
 // Customer adds or updates review
 export const addOrUpdateReview = async (req, res) => {
-  const customerId = req.user.userId;
-  const { listingId, rating, comment } = req.body;
+    const customerId = req.user.userId;
+    const { listingId, rating, comment } = req.body;
 
-  if (!listingId || !rating) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
-  if (rating < 1 || rating > 5) {
-    return res.status(400).json({ message: "Rating must be between 1 and 5" });
-  }
-
-  try {
-    const [listingRows] = await db.query("SELECT id FROM service_listings WHERE id = ?", [listingId]);
-    if (listingRows.length === 0) {
-      return res.status(404).json({ message: "Listing not found" });
+    if (!listingId || !rating) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+    if (rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
 
-    const [existing] = await db.query(
-      "SELECT id FROM reviews WHERE listing_id = ? AND customer_id = ?",
-      [listingId, customerId]
-    );
+    try {
+        const [listingRows] = await db.query("SELECT id FROM service_listings WHERE id = ?", [listingId]);
+        if (listingRows.length === 0) {
+        return res.status(404).json({ message: "Listing not found" });
+        }
 
-    if (existing.length > 0) {
-      await db.query(
-        "UPDATE reviews SET rating = ?, comment = ?, created_at = NOW() WHERE id = ?",
-        [rating, comment, existing[0].id]
-      );
-    } else {
-      await db.query(
-        "INSERT INTO reviews (listing_id, customer_id, rating, comment) VALUES (?, ?, ?, ?)",
-        [listingId, customerId, rating, comment]
-      );
+        const [existing] = await db.query(
+        "SELECT id FROM reviews WHERE listing_id = ? AND customer_id = ?",
+        [listingId, customerId]
+        );
+
+        if (existing.length > 0) {
+        await db.query(
+            "UPDATE reviews SET rating = ?, comment = ?, created_at = NOW() WHERE id = ?",
+            [rating, comment, existing[0].id]
+        );
+        } else {
+        await db.query(
+            "INSERT INTO reviews (listing_id, customer_id, rating, comment) VALUES (?, ?, ?, ?)",
+            [listingId, customerId, rating, comment]
+        );
+        }
+
+        // Recalculate average rating
+        const [avgResult] = await db.query(
+        "SELECT AVG(rating) AS avg FROM reviews WHERE listing_id = ?",
+        [listingId]
+        );
+
+        const average = parseFloat(avgResult[0].avg || 0).toFixed(1); // like 4.2
+
+        //  Update average_rating in service_listings
+        await db.query(
+        "UPDATE service_listings SET average_rating = ? WHERE id = ?",
+        [average, listingId]
+        );
+
+        return res.status(200).json({ message: "Review submitted", average_rating: average });
+    } catch (error) {
+        console.error("addOrUpdateReview error:", error);
+        res.status(500).json({ message: "Server error" });
     }
-
-    // Recalculate average rating
-    const [avgResult] = await db.query(
-      "SELECT AVG(rating) AS avg FROM reviews WHERE listing_id = ?",
-      [listingId]
-    );
-
-    const average = parseFloat(avgResult[0].avg || 0).toFixed(1); // like 4.2
-
-    //  Update average_rating in service_listings
-    await db.query(
-      "UPDATE service_listings SET average_rating = ? WHERE id = ?",
-      [average, listingId]
-    );
-
-    return res.status(200).json({ message: "Review submitted", average_rating: average });
-  } catch (error) {
-    console.error("addOrUpdateReview error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 };
 
 
