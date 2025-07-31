@@ -60,10 +60,7 @@ export function ServiceProvider({ children }) {
     "Plumber",
     "Tutor",
     "Home Cleaning",
-    "Fitness Trainer",
-    "Handyman",
-    "Gardener",
-    "Painter",
+    "Carpenter"
   ])
 
   const addService = (serviceData) => {
