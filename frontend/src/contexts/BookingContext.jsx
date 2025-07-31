@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useContext, useState } from "react"
+import { fetchWithAuth } from "../api/api.js";
 
 const BookingContext = createContext()
 
@@ -14,7 +15,8 @@ export function BookingProvider({ children }) {
   // Fetch bookings for the customer
   const fetchMyBookings = async () => {
     try {
-      const res = await fetch(`${backendUrl}/bookings/my`, {
+      const res = await fetchWithAuth(`${backendUrl}/bookings/my`, {
+        method: "GET",
         credentials: "include",
       })
       if (!res.ok) throw new Error("Failed to fetch bookings")
@@ -28,7 +30,7 @@ export function BookingProvider({ children }) {
   // Create a booking (customer side)
   const createBooking = async (bookingData) => {
     try {
-      const res = await fetch(`${backendUrl}/bookings`, {
+      const res = await fetchWithAuth(`${backendUrl}/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -49,7 +51,7 @@ export function BookingProvider({ children }) {
   // Update booking status (provider side)
   const updateBookingStatus = async (bookingId, status) => {
     try {
-      const res = await fetch(`${backendUrl}/bookings/${bookingId}/status`, {
+      const res = await fetchWithAuth(`${backendUrl}/bookings/${bookingId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -59,8 +61,6 @@ export function BookingProvider({ children }) {
         const data = await res.json()
         throw new Error(data.message || "Failed to update booking status")
       }
-      // Refresh bookings
-      await fetchMyBookings()
       return { success: true }
     } catch (error) {
       console.error("updateBookingStatus error:", error)

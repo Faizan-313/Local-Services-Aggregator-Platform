@@ -83,6 +83,7 @@ export const getAllListings = async (req, res) => {
 
     try {
         const [rows] = await db.query(query, params);
+        // console.log(rows)
         res.json(rows);
     } catch (error) {
         console.error("Get all listings error:", error);

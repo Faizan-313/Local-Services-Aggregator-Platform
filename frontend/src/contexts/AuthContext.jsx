@@ -2,6 +2,7 @@
 import React from "react"
 
 import { createContext, useContext, useState, useEffect } from "react"
+import { fetchWithAuth } from "../api/api.js"
 
 const AuthContext = createContext()
 
@@ -75,7 +76,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch(`${API_URL}/auth/logout`, {
+      await fetchWithAuth(`${API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include", // send cookies
       })

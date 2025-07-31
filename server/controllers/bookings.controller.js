@@ -87,9 +87,8 @@ export const getProviderBookings = async (req, res) => {
             JOIN users u ON b.customer_id = u.id
             WHERE sl.provider_id = ? 
             ORDER BY booking_date DESC`,
-        [providerId]
-);
-
+            [providerId]
+        );
         res.json(rows);
     } catch (error) {
         console.error("getProviderBookings error:", error);

@@ -2,22 +2,16 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useBookings } from "../contexts/BookingContext";
 import { Bell, User, LogOut, Home, Search } from "lucide-react";
 
 function Navbar() {
   const { user, logout } = useAuth();
-  const { notifications } = useBookings();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
-
-  const unreadNotifications = notifications.filter(
-    (n) => !n.read && n.userId === user?.id
-  ).length;
 
   return (
     <nav className="bg-white shadow-md">
@@ -45,14 +39,7 @@ function Navbar() {
                 Dashboard
               </Link>
 
-              <div className="relative">
-                <Bell className="w-5 h-5 text-gray-700 hover:text-blue-600" />
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
-                    {unreadNotifications}
-                  </span>
-                )}
-              </div>
+              {/* Removed notification bell (since we removed notifications) */}
 
               <div className="relative group">
                 <div className="flex items-center gap-1 cursor-pointer text-gray-700 group-hover:text-blue-600">

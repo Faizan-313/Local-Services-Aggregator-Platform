@@ -44,7 +44,18 @@ function CustomerDashboard() {
               <h3 className="text-xl font-bold">{b.title}</h3>
               <p className="text-gray-600 text-sm">City: {b.city}</p>
               <p className="text-gray-600 text-sm">Price: ₹{b.price}</p>
-              <p className="text-gray-600 text-sm">Status: {b.status}</p>
+              <p
+                className={`text-sm font-medium ${b.status === "pending"
+                    ? "text-yellow-600"
+                    : b.status === "accepted"
+                      ? "text-green-600"
+                      : b.status === "rejected"
+                        ? "text-red-600"
+                        : "text-gray-600"
+                  }`}
+              >
+                {b.status}
+              </p>
               <p className="text-sm mt-2">📅 Booking Date: {new Date(b.booking_date).toLocaleDateString()}</p>
             </div>
           ))}

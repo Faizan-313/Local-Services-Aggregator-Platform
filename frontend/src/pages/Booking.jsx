@@ -2,6 +2,7 @@
 import React, { useState } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
+import { fetchWithAuth } from "../api/api.js"
 
 function BookingPage() {
     const { serviceId } = useParams()
@@ -19,16 +20,16 @@ function BookingPage() {
         setLoading(true)
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_SERVER_API_URL}/bookings`, {
+            const res = await fetchWithAuth(`${import.meta.env.VITE_SERVER_API_URL}/bookings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({
                     listingId: serviceId,
-                    bookingDate: date,
-                    customerId: user?.id,
+                    booking_date: date,
                 }),
             })
+
 
             const data = await res.json()
             if (!res.ok) throw new Error(data.message || "Booking failed")

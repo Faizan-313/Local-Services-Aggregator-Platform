@@ -1,5 +1,6 @@
 "use client"
 import React, { createContext, useContext, useState } from "react"
+import { fetchWithAuth } from "../api/api.js"
 
 const ServiceContext = createContext()
 
@@ -21,7 +22,7 @@ export function ServiceProvider({ children }) {
       if (category) params.set("category", category.toLowerCase())
       if (params.toString()) url += `?${params}`
 
-      const res = await fetch(url, { credentials: "include" })
+      const res = await fetchWithAuth(url, { credentials: "include" })
       if (!res.ok) throw new Error("Failed to fetch services")
       const data = await res.json()
       setServices(data)
@@ -34,7 +35,7 @@ export function ServiceProvider({ children }) {
 
   const addService = async (serviceData) => {
     try {
-      const res = await fetch(`${backendUrl}/listings`, {
+      const res = await fetchWithAuth(`${backendUrl}/listings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -51,7 +52,7 @@ export function ServiceProvider({ children }) {
 
   const addReview = async (listingId, rating, comment) => {
     try {
-      const res = await fetch(`${backendUrl}/reviews`, {
+      const res = await fetchWithAuth(`${backendUrl}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
