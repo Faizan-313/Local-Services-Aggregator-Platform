@@ -2,27 +2,17 @@
 import React, { useState, useEffect } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { useServices } from "../contexts/ServiceContext"
-import {
-  Wrench,
-  BookOpen,
-  ShowerHead,
-  Dumbbell,
-  Sparkles,
-  Hammer,
-  ShieldCheck
-} from "lucide-react"
+import { Search, Filter, Star, MapPin, DollarSign } from "lucide-react"
 
 function Services() {
-  const { services, categories, searchServices } = useServices()
+  const { services, searchServices } = useServices()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "")
   const [filters, setFilters] = useState({
-    category: searchParams.get("category") || "",
     location: searchParams.get("location") || "",
     minPrice: searchParams.get("minPrice") || "",
     maxPrice: searchParams.get("maxPrice") || "",
-    minRating: searchParams.get("minRating") || "",
   })
   const [filteredServices, setFilteredServices] = useState(services)
   const [showFilters, setShowFilters] = useState(false)
@@ -44,21 +34,17 @@ function Services() {
   const updateSearchParams = () => {
     const params = new URLSearchParams()
     if (searchQuery) params.set("q", searchQuery)
-    if (filters.category) params.set("category", filters.category)
     if (filters.location) params.set("location", filters.location)
     if (filters.minPrice) params.set("minPrice", filters.minPrice)
     if (filters.maxPrice) params.set("maxPrice", filters.maxPrice)
-    if (filters.minRating) params.set("minRating", filters.minRating)
     setSearchParams(params)
   }
 
   const clearFilters = () => {
     setFilters({
-      category: "",
       location: "",
       minPrice: "",
       maxPrice: "",
-      minRating: "",
     })
     setSearchQuery("")
     setSearchParams({})
@@ -99,18 +85,6 @@ function Services() {
         <div className="filters-section">
           <div className="filters-grid">
             <div className="filter-group">
-              <label>Category</label>
-              <select value={filters.category} onChange={(e) => handleFilterChange("category", e.target.value)}>
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="filter-group">
               <label>Location</label>
               <input
                 type="text"
@@ -124,7 +98,7 @@ function Services() {
               <label>Min Price</label>
               <input
                 type="number"
-                placeholder="$0"
+                placeholder="0"
                 value={filters.minPrice}
                 onChange={(e) => handleFilterChange("minPrice", e.target.value)}
               />
@@ -134,20 +108,10 @@ function Services() {
               <label>Max Price</label>
               <input
                 type="number"
-                placeholder="$1000"
+                placeholder="1000"
                 value={filters.maxPrice}
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
               />
-            </div>
-
-            <div className="filter-group">
-              <label>Min Rating</label>
-              <select value={filters.minRating} onChange={(e) => handleFilterChange("minRating", e.target.value)}>
-                <option value="">Any Rating</option>
-                <option value="4">4+ Stars</option>
-                <option value="4.5">4.5+ Stars</option>
-                <option value="5">5 Stars</option>
-              </select>
             </div>
           </div>
 
@@ -175,26 +139,26 @@ function Services() {
             <div key={service.id} className="service-card">
               <img src={service.image || "/placeholder.svg"} alt={service.title} />
               <div className="service-info">
-                <div className="service-category">{service.category}</div>
+                <div className="service-category">{service.service_name}</div>
                 <h3>{service.title}</h3>
-                <p className="service-provider">{service.providerName}</p>
                 <p className="service-description">{service.description}</p>
 
                 <div className="service-meta">
                   <div className="rating">
                     <Star className="star-icon filled" />
-                    <span>{service.rating}</span>
-                    <span className="review-count">({service.reviews.length})</span>
+                    <span>
+                      {Number.isFinite(service.average_rating) ? service.average_rating.toFixed(1) : "N/A"}
+                    </span>
                   </div>
                   <div className="location">
                     <MapPin className="icon" />
-                    <span>{service.location}</span>
+                    <span>{service.city}</span>
                   </div>
                 </div>
 
                 <div className="service-footer">
                   <div className="service-price">
-                    <DollarSign className="icon" />${service.price}/hour
+                    <DollarSign className="icon" />${service.price}
                   </div>
                   <Link to={`/service/${service.id}`} className="view-service-btn">
                     View Details
@@ -204,6 +168,13 @@ function Services() {
             </div>
           ))}
         </div>
+
+        {filteredServices.length === 0 && (
+          <div className="no-results">
+            <h3>No services found</h3>
+            <p>Try adjusting your search criteria or filters</p>
+          </div>
+        )}
       </div>
     </div>
   )

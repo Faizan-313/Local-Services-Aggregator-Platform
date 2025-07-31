@@ -11,7 +11,7 @@ import Register from "./pages/Register"
 import ProviderDashboard from "./pages/ProviderDashboard"
 import CustomerDashboard from "./pages/CustomerDashboard"
 import Services from "./pages/Services"
-import ServiceDetail from "./pages/ServiceDetail"
+// import ServiceDetail from "./pages/ServiceDetail"
 // import BookingPage from "./pages/BookingPage"
 // import Profile from "./pages/Profile"
 import ServiceProviders from "./pages/ServiceProviders";
@@ -31,7 +31,7 @@ function AppContent() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/services" element={<Services />} />
-      <Route path="/service/:id" element={<ServiceDetail />} />
+      {/* <Route path="/service/:id" element={<ServiceDetail />} /> */}
         <Route path="/services/:serviceName" element={<ServiceProviders />} />
       <Route
         path="/dashboard"
