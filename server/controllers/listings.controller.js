@@ -52,10 +52,9 @@ export const createListing = async (req, res) => {
 };
 
 
-
-//get all listings (with  filters: city, price_min, price_max)
+// get all listings (with filters: city, price_min, price_max, category)
 export const getAllListings = async (req, res) => {
-    const { city, price_min, price_max } = req.query;
+    const { city, price_min, price_max, category } = req.query;
 
     let query = `
         SELECT l.*, s.name AS service_name 
@@ -77,10 +76,13 @@ export const getAllListings = async (req, res) => {
         query += " AND l.price <= ?";
         params.push(price_max);
     }
+    if (category) {
+        query += " AND LOWER(s.name) = ?";
+        params.push(category.toLowerCase());
+    }
 
     try {
         const [rows] = await db.query(query, params);
-        console.log
         res.json(rows);
     } catch (error) {
         console.error("Get all listings error:", error);
