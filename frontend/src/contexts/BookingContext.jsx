@@ -1,7 +1,5 @@
 "use client"
-import React from "react"
-
-import { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useState } from "react"
 
 const BookingContext = createContext()
 
@@ -11,69 +9,70 @@ export function useBookings() {
 
 export function BookingProvider({ children }) {
   const [bookings, setBookings] = useState([])
-  const [notifications, setNotifications] = useState([])
+  const backendUrl = import.meta.env.VITE_SERVER_API_URL
 
-  const createBooking = (bookingData) => {
-    const newBooking = {
-      id: Date.now(),
-      ...bookingData,
-      status: "pending",
-      createdAt: new Date().toISOString(),
+  // Fetch bookings for the customer
+  const fetchMyBookings = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/bookings/my`, {
+        credentials: "include",
+      })
+      if (!res.ok) throw new Error("Failed to fetch bookings")
+      const data = await res.json()
+      setBookings(data)
+    } catch (error) {
+      console.error("fetchMyBookings error:", error)
     }
-
-    setBookings((prev) => [...prev, newBooking])
-
-    // Add notification
-    addNotification({
-      type: "booking_created",
-      message: `Booking request sent for ${bookingData.serviceTitle}`,
-      userId: bookingData.customerId,
-    })
-
-    return newBooking
   }
 
-  const updateBookingStatus = (bookingId, status) => {
-    setBookings((prev) =>
-      prev.map((booking) => {
-        if (booking.id === bookingId) {
-          const updatedBooking = { ...booking, status }
-
-          // Add notification
-          addNotification({
-            type: "booking_updated",
-            message: `Booking ${status} for ${booking.serviceTitle}`,
-            userId: booking.customerId,
-          })
-
-          return updatedBooking
-        }
-        return booking
-      }),
-    )
-  }
-
-  const addNotification = (notification) => {
-    const newNotification = {
-      id: Date.now(),
-      ...notification,
-      createdAt: new Date().toISOString(),
-      read: false,
+  // Create a booking (customer side)
+  const createBooking = async (bookingData) => {
+    try {
+      const res = await fetch(`${backendUrl}/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(bookingData),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.message || "Failed to create booking")
+      }
+      await fetchMyBookings()
+      return { success: true }
+    } catch (error) {
+      console.error("createBooking error:", error)
+      return { success: false, error: error.message }
     }
-    setNotifications((prev) => [...prev, newNotification])
   }
 
-  const markNotificationAsRead = (notificationId) => {
-    setNotifications((prev) => prev.map((notif) => (notif.id === notificationId ? { ...notif, read: true } : notif)))
+  // Update booking status (provider side)
+  const updateBookingStatus = async (bookingId, status) => {
+    try {
+      const res = await fetch(`${backendUrl}/bookings/${bookingId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.message || "Failed to update booking status")
+      }
+      // Refresh bookings
+      await fetchMyBookings()
+      return { success: true }
+    } catch (error) {
+      console.error("updateBookingStatus error:", error)
+      return { success: false, error: error.message }
+    }
   }
 
   const value = {
     bookings,
-    notifications,
+    fetchMyBookings,
     createBooking,
     updateBookingStatus,
-    addNotification,
-    markNotificationAsRead,
   }
 
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>
