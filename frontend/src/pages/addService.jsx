@@ -15,7 +15,7 @@ function AddService() {
         price: "",
         city: "",
         serviceName: "",
-        availability: [] 
+        availability: []
     })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
@@ -52,7 +52,7 @@ function AddService() {
             })
 
             if (result.success) {
-                navigate("/dashboard") 
+                navigate("/dashboard")
             } else {
                 setError(result.error || "Failed to add service")
             }

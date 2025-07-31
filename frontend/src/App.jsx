@@ -15,6 +15,7 @@ import ServiceDetail from "./pages/ServiceDetail"
 import AddService from "./pages/addService"
 import ServiceProviders from "./pages/ServiceProviders";
 import BookingPage from "./pages/Booking"
+import ServiceProfile from "./pages/ServiceProfile"
 import './App.css'
 
 function ProtectedRoute({ children }) {
@@ -35,6 +36,7 @@ function AppContent() {
       <Route path="/service/:id" element={<ServiceDetail />} />
       <Route path="/services/:serviceName" element={<ServiceProviders />} />
       <Route path="/book/:serviceId" element={<ProtectedRoute> <BookingPage /></ProtectedRoute>} />
+      <Route path="/provider/:id" element={<ServiceProfile />} />
       <Route
         path="/dashboard"
         element={

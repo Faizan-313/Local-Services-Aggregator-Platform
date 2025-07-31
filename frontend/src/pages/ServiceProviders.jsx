@@ -162,16 +162,23 @@ export default function ServiceProviderList() {
               <p className="text-sm text-gray-600">Price: ₹{provider.price}</p>
               <p className="text-sm text-gray-600">Rating: {provider.rating || "N/A"}</p>
 
-              <div className="mt-4">
+              <div className="mt-4 flex gap-2">
                 {user && (
-                  <a
-                    href={`/book/${provider.id}?customerId=${user.id}`}
-                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    Book Now
-                  </a>
+                  <>
+                    <a
+                      href={`/book/${provider.id}?customerId=${user.id}`}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Book Now
+                    </a>
+                    <a
+                      href={`/service/${provider.id}`}
+                      className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                    >
+                      View Details
+                    </a>
+                  </>
                 )}
-
               </div>
             </div>
           ))}
