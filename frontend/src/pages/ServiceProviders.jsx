@@ -163,7 +163,7 @@ export default function ServiceProviderList() {
               <p className="text-sm text-gray-600">Rating: {provider.rating || "N/A"}</p>
 
               <div className="mt-4">
-                {user && (
+                {user?.role === "customer" && (
                   <a
                     href={`/book/${provider.id}?customerId=${user.id}`}
                     className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
