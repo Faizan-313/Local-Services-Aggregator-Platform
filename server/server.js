@@ -20,7 +20,13 @@ app.use(express.urlencoded({extended: true}))
 //routes
 import authRoute from "./routes/auth.routes.js"
 
-app.use('/api/auth', authRoute)
+
+import reviewRoute from "./routes/reviews.routes.js"
+
+app.use('/api/auth', authRoute);
+
+
+app.use('/api',reviewRoute);
 
 app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`)
