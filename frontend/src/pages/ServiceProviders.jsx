@@ -160,8 +160,6 @@ export default function ServiceProviderList() {
               <p className="text-gray-700 mb-1">{provider.description}</p>
               <p className="text-sm text-gray-600">Location: {provider.location}</p>
               <p className="text-sm text-gray-600">Price: ₹{provider.price}</p>
-              <p className="text-sm text-gray-600">Rating: {provider.rating || "N/A"}</p>
-
               <div className="mt-4 flex gap-2">
                 {user && (
                   <>

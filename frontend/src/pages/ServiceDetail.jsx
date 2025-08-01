@@ -96,7 +96,7 @@ function ServiceDetails() {
             </div>
         )
     }
-    
+
 
 
     if (!service) return <div className="p-6 text-center">Loading service details...</div>
@@ -109,6 +109,13 @@ function ServiceDetails() {
                 <MapPin className="w-4 h-4" />
                 {service.city}
             </div>
+            <div className="flex items-center gap-1 mb-2 text-yellow-500">
+                <Star className="w-5 h-5" fill="#facc15" />
+                <span className="text-gray-700 text-sm">
+                    {typeof service.avgRating === 'number' ? service.avgRating.toFixed(1) : '0.0'} / 5
+                </span>
+            </div>
+
 
             <hr className="my-6" />
 

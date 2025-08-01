@@ -28,7 +28,7 @@ function ProviderDashboard() {
     const fetchReviewsStats = async () => {
       if (!user?.id) return
       try {
-        console.log("Fetching reviews stats for provider...")
+        // console.log("Fetching reviews stats for provider...")
         const res = await fetchWithAuth(
           `${import.meta.env.VITE_SERVER_API_URL}/provider`,
           { credentials: "include" }

@@ -91,7 +91,7 @@ export const getProviderReviewsStats = async (req, res) => {
             WHERE s.provider_id = ?`,
             [providerId]
         );
-        console.log("rows:", rows);
+        // console.log("rows:", rows);
         res.json({
             totalReviews: rows[0].totalReviews || 0,
             avgRating: rows[0].avgRating || 0
