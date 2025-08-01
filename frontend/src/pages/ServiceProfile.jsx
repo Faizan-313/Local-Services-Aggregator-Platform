@@ -1,4 +1,3 @@
-// src/pages/ServiceProfile.jsx
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useServices } from "../contexts/ServiceContext"
@@ -32,14 +31,6 @@ function ServiceProfile() {
       <p className="text-gray-700 mb-2">{provider.description}</p>
       <p><strong>Location:</strong> {provider.city}</p>
       <p><strong>Price:</strong> ₹{provider.price}</p>
-      
-      <div className="mt-2 flex items-center gap-2">
-        {renderStars(Math.round(provider.average_rating || 0))}
-        <span className="ml-2 text-sm text-gray-600">
-          {provider.average_rating ? provider.average_rating.toFixed(1) : "No rating yet"}
-        </span>
-      </div>
-
       <p className="mt-2"><strong>Category:</strong> {provider.service_name}</p>
 
       <div className="mt-6">
@@ -48,9 +39,10 @@ function ServiceProfile() {
           <ul className="space-y-2">
             {provider.reviews.map((review, idx) => (
               <li key={idx} className="border p-2 rounded">
+                <p className="font-semibold">{review.customer_name}</p>
                 <div className="flex items-center gap-2">
                   {renderStars(review.rating)}
-                  <span className="text-sm text-gray-600">{review.rating}/5</span>
+                  <span className="text-sm text-gray-600">{new Date(review.created_at).toLocaleDateString()}</span>
                 </div>
                 <p className="text-gray-700 mt-1">{review.comment}</p>
               </li>

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { Star, MapPin, DollarSign } from "lucide-react"
 import { useServices } from "../contexts/ServiceContext"
 import { useAuth } from "../contexts/AuthContext"
+import { fetchWithAuth } from "../api/api"
 
 function ServiceDetails() {
     const { id } = useParams()
@@ -22,7 +23,7 @@ function ServiceDetails() {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const res = await fetch(`${backendUrl}/listings/${id}`, {
+                const res = await fetchWithAuth(`${backendUrl}/listings/${id}`, {
                     credentials: "include",
                 })
                 const data = await res.json()
@@ -34,7 +35,7 @@ function ServiceDetails() {
 
         const fetchReviews = async () => {
             try {
-                const res = await fetch(`${backendUrl}/reviews/${id}`, {
+                const res = await fetchWithAuth(`${backendUrl}/reviews/${id}`, {
                     credentials: "include",
                 })
                 const data = await res.json()
@@ -107,14 +108,6 @@ function ServiceDetails() {
             <div className="mb-2 flex items-center gap-2 text-gray-600">
                 <MapPin className="w-4 h-4" />
                 {service.city}
-            </div>
-            <div className="mb-2 flex items-center gap-2 text-gray-600">
-                <DollarSign className="w-4 h-4" />
-                ₹{service.price}
-            </div>
-            <div className="mb-4 flex items-center gap-2 text-gray-600">
-                <Star className="w-4 h-4" />
-                {service.rating || "0"}
             </div>
 
             <hr className="my-6" />

@@ -10,30 +10,50 @@ function ProviderDashboard() {
   const { services } = useServices()
   const { user } = useAuth()
   const { updateBookingStatus } = useBookings()
+
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(false)
+  const [updatingBookingId, setUpdatingBookingId] = useState(null)
 
+  // ✅ New state to store fresh total reviews and avg rating from backend
+  const [totalReviews, setTotalReviews] = useState(0)
+  const [avgRating, setAvgRating] = useState("0.0")
+
+  // Services created by this provider
   const providerServices = services.filter(
     (service) => service.provider_id === user?.id
   )
 
-  const totalReviews = providerServices.reduce(
-    (sum, s) => sum + (Array.isArray(s.reviews) ? s.reviews.length : 0),
-    0
-  )
+  useEffect(() => {
+    const fetchReviewsStats = async () => {
+      if (!user?.id) return
+      try {
+        console.log("Fetching reviews stats for provider...")
+        const res = await fetchWithAuth(
+          `${import.meta.env.VITE_SERVER_API_URL}/reviews/provider`,
+          { credentials: "include" }
+        )
+        // console.log(`${import.meta.env.VITE_SERVER_API_URL}/reviews/provider`,)
+        if (!res.ok) throw new Error("Failed to fetch reviews stats")
+        const data = await res.json()
+        // console.log("Fetched reviews data:", data)
+        setTotalReviews(data.totalReviews || 0)
+        setAvgRating(
+          typeof data.avgRating === "number" ? data.avgRating.toFixed(1) : "0.0"
+        )
+      } catch (err) {
+        console.error("Error fetching reviews stats:", err)
+      }
+    }
 
-  const avgRating = providerServices.length
-    ? (
-        providerServices.reduce(
-          (sum, s) => sum + (typeof s.rating === "number" ? s.rating : 0),
-          0
-        ) / providerServices.length
-      ).toFixed(1)
-    : "0.0"
+    fetchReviewsStats()
+  }, [user,user?.id])
+
 
   // Fetch provider bookings
   useEffect(() => {
     const fetchBookings = async () => {
+      if (!user?.id) return
       try {
         setLoading(true)
         const res = await fetchWithAuth(
@@ -50,24 +70,24 @@ function ProviderDashboard() {
       }
     }
 
-    if (user?.id) fetchBookings()
+    fetchBookings()
   }, [user?.id])
 
   const totalBookings = bookings.length
   const pendingBookings = bookings.filter((b) => b.status === "pending").length
 
-  // Use context to update booking status
+  // Accept/reject booking
   const handleUpdateStatus = async (bookingId, newStatus) => {
+    setUpdatingBookingId(bookingId)
     const result = await updateBookingStatus(bookingId, newStatus)
     if (result.success) {
       setBookings((prev) =>
-        prev.map((b) =>
-          b.id === bookingId ? { ...b, status: newStatus } : b
-        )
+        prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
       )
     } else {
       console.error("Failed to update booking status:", result.error)
     }
+    setUpdatingBookingId(null)
   }
 
   return (
@@ -116,8 +136,8 @@ function ProviderDashboard() {
             <p className="text-sm">📍 {service.location}</p>
             <p className="text-sm">
               ⭐{" "}
-              {typeof service.rating === "number"
-                ? service.rating.toFixed(1)
+              {typeof service.average_rating === "number"
+                ? service.average_rating.toFixed(1)
                 : "0.0"}{" "}
               ({Array.isArray(service.reviews) ? service.reviews.length : 0} reviews)
             </p>
@@ -126,9 +146,7 @@ function ProviderDashboard() {
       </div>
 
       {providerServices.length === 0 && (
-        <p className="text-center text-gray-500 mt-10">
-          No services added yet.
-        </p>
+        <p className="text-center text-gray-500 mt-10">No services added yet.</p>
       )}
 
       {/* Show recent bookings */}
@@ -157,20 +175,24 @@ function ProviderDashboard() {
                     <td className="px-4 py-2 capitalize">{b.status}</td>
                     <td className="px-4 py-2">
                       {b.status === "pending" && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleUpdateStatus(b.id, "accepted")}
-                            className="bg-green-500 text-white px-2 py-1 rounded text-xs"
-                          >
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => handleUpdateStatus(b.id, "rejected")}
-                            className="bg-red-500 text-white px-2 py-1 rounded text-xs"
-                          >
-                            Reject
-                          </button>
-                        </div>
+                        updatingBookingId === b.id ? (
+                          <span className="text-gray-500 text-xs">Updating...</span>
+                        ) : (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleUpdateStatus(b.id, "accepted")}
+                              className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => handleUpdateStatus(b.id, "rejected")}
+                              className="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )
                       )}
                     </td>
                   </tr>

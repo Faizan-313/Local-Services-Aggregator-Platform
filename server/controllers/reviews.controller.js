@@ -70,10 +70,34 @@ export const getListingReviews = async (req, res) => {
                 ORDER BY r.created_at DESC`,
             [listingId]
         );
-        console.log(reviews)
+        // console.log(reviews)
         res.json(reviews);
     } catch (error) {
         console.error("getListingReviews error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+
+export const getProviderReviewsStats = async (req, res) => {
+    try {
+        // console.log("this route is hit");
+        const providerId = req.user.userId;
+        const [rows] = await db.query(
+            `SELECT COUNT(*) as totalReviews, AVG(r.rating) as avgRating
+            FROM reviews r
+            JOIN service_listings s ON r.listing_id = s.id
+            WHERE s.provider_id = ?`,
+            [providerId]
+        );
+        console.log("rows:", rows);
+        res.json({
+            totalReviews: rows[0].totalReviews || 0,
+            avgRating: rows[0].avgRating || 0
+        });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 };
