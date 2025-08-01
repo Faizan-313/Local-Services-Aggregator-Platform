@@ -93,6 +93,7 @@ function ProviderDashboard() {
     setUpdatingBookingId(null)
   }
 
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">Welcome, {user?.name} 👋</h1>
@@ -144,6 +145,12 @@ function ProviderDashboard() {
                 : "0.0"}{" "}
               ({Array.isArray(service.reviews) ? service.reviews.length : 0} reviews)
             </p>
+            {/* <button 
+              onClick={()=> handleDelete(service.id)} 
+              className="border-2 ml-auto rounded-xl p-[5px] mt-1 text-white bg-red-400 cursor-pointer hover:bg-red-500"
+            >
+              Delete
+            </button> */}
           </div>
         ))}
       </div>

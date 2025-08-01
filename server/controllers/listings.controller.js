@@ -52,7 +52,7 @@ export const createListing = async (req, res) => {
 };
 
 
-// get all listings (with filters: city, price_min, price_max, category)
+// get all listings 
 export const getAllListings = async (req, res) => {
     const { city, price_min, price_max, category } = req.query;
 

@@ -3,6 +3,7 @@ import React from "react"
 
 import { createContext, useContext, useState, useEffect } from "react"
 import { fetchWithAuth } from "../api/api.js"
+import toast from "react-hot-toast"
 
 const AuthContext = createContext()
 
@@ -38,6 +39,7 @@ export function AuthProvider({ children }) {
         const data = await res.json()
         setUser(data.user)
         localStorage.setItem("user", JSON.stringify(data.user))
+        toast.success("Logged In Successfully")
         return { success: true }
       } else {
         const error = await res.json()
@@ -64,6 +66,7 @@ export function AuthProvider({ children }) {
       const data = await res.json()
 
       if (res.ok) {
+        toast.success(`${userData.role} registered successfully`)
         return { success: true }
       } else {
         return { success: false, error: data.error || "Registration failed" }
@@ -85,6 +88,7 @@ export function AuthProvider({ children }) {
     }
     setUser(null)
     localStorage.removeItem("user")
+    toast.success("Logged Out Successufully")
   }
 
   const value = {

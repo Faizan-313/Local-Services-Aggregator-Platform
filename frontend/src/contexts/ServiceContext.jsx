@@ -1,6 +1,7 @@
 "use client"
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useState, useEffect } from "react"
 import { fetchWithAuth } from "../api/api.js"
+import toast from "react-hot-toast"
 
 const ServiceContext = createContext()
 
@@ -11,12 +12,14 @@ export function useServices() {
 export function ServiceProvider({ children }) {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const backendUrl = import.meta.env.VITE_SERVER_API_URL 
+  const backendUrl = import.meta.env.VITE_SERVER_API_URL
 
   const refreshServices = async (category = "") => {
     try {
       setLoading(true)
+      setError(null)
       let url = `${backendUrl}/listings`
       const params = new URLSearchParams()
       if (category) params.set("category", category.toLowerCase())
@@ -26,8 +29,9 @@ export function ServiceProvider({ children }) {
       if (!res.ok) throw new Error("Failed to fetch services")
       const data = await res.json()
       setServices(data)
-    } catch (error) {
-      console.error("Fetch services error:", error)
+    } catch (err) {
+      console.error("Fetch services error:", err)
+      setError(err.message || "An error occurred while fetching services")
     } finally {
       setLoading(false)
     }
@@ -43,10 +47,11 @@ export function ServiceProvider({ children }) {
       })
       if (!res.ok) throw new Error((await res.json()).message || "Failed to add service")
       await refreshServices()
+      toast.success("Service added successfully")
       return { success: true }
-    } catch (error) {
-      console.error("Add service error:", error)
-      return { success: false, error: error.message }
+    } catch (err) {
+      console.error("Add service error:", err)
+      return { success: false, error: err.message }
     }
   }
 
@@ -60,16 +65,22 @@ export function ServiceProvider({ children }) {
       })
       if (!res.ok) throw new Error((await res.json()).message || "Failed to add review")
       await refreshServices()
+      toast.success("Review Added")
       return { success: true }
-    } catch (error) {
-      console.error("Add review error:", error)
-      return { success: false, error: error.message }
+    } catch (err) {
+      console.error("Add review error:", err)
+      return { success: false, error: err.message }
     }
   }
+
+  useEffect(() => {
+    refreshServices()
+  }, [])
 
   const value = {
     services,
     loading,
+    error,
     refreshServices,
     addService,
     addReview,

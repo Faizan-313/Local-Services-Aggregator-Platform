@@ -41,7 +41,7 @@ function Register() {
     try {
       const result = await register(formData)
       if (result && result.success) {
-        navigate("/dashboard")
+        navigate("/login")
       } else {
         setError(result?.error || "Registration failed")
       }

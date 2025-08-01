@@ -1,6 +1,7 @@
 "use client"
 import React, { createContext, useContext, useState } from "react"
 import { fetchWithAuth } from "../api/api.js";
+import toast from "react-hot-toast";
 
 const BookingContext = createContext()
 
@@ -41,6 +42,7 @@ export function BookingProvider({ children }) {
         throw new Error(data.message || "Failed to create booking")
       }
       await fetchMyBookings()
+      toast.success("Booking Done Successfully")
       return { success: true }
     } catch (error) {
       console.error("createBooking error:", error)
@@ -61,6 +63,7 @@ export function BookingProvider({ children }) {
         const data = await res.json()
         throw new Error(data.message || "Failed to update booking status")
       }
+      toast.success(`${status} Booking`)
       return { success: true }
     } catch (error) {
       console.error("updateBookingStatus error:", error)

@@ -17,6 +17,7 @@ import ServiceProviders from "./pages/ServiceProviders";
 import BookingPage from "./pages/Booking"
 import ServiceProfile from "./pages/ServiceProfile"
 import './App.css'
+import { Toaster } from "react-hot-toast"
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -81,6 +82,7 @@ function App() {
               <Navbar />
               <main className="main-content">
                 <AppContent />
+                <Toaster position="top-center" reverseOrder={false} />
               </main>
             </div>
           </Router>

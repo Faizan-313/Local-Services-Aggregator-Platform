@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { Search, Filter } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
+import { fetchWithAuth } from "../api/api"
 
 export default function ServiceProviderList() {
   const { serviceName } = useParams()
@@ -22,7 +23,7 @@ export default function ServiceProviderList() {
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        const res = await fetch(`${backendUrl}/listings?category=${serviceName.toLowerCase()}`, {
+        const res = await fetchWithAuth(`${backendUrl}/listings?category=${serviceName.toLowerCase()}`, {
           credentials: "include",
         })
         if (!res.ok) throw new Error("Failed to fetch providers")

@@ -21,19 +21,18 @@ export const createBooking = async (req, res) => {
         if (existing.length > 0) {
         const booking = existing[0];
 
-        // If same customer & pending → just update timestamp
+        // If same customer & pending just update timestamp
         if (booking.customer_id === customerId && booking.status === "pending") {
             await db.query(`UPDATE bookings SET updated_at = NOW() WHERE id = ?`, [booking.id]);
             return res.status(200).json({ message: "Booking updated (was already pending)" });
         }
 
-        // If existing booking is rejected/cancelled → delete old one to allow new booking
+        // If existing booking is rejected delete old one to allow new booking
         if (booking.status === "rejected" || booking.status === "cancelled") {
             await db.query(`DELETE FROM bookings WHERE id = ?`, [booking.id]);
-            // continue below to insert new booking
         }
         
-        // If accepted or pending by another customer → block
+        // If accepted or pending by another customer block
         else if (booking.status === "accepted" || booking.customer_id !== customerId) {
             return res.status(409).json({ message: "This date is already booked or pending approval" });
         }
@@ -41,11 +40,11 @@ export const createBooking = async (req, res) => {
 
         // Insert new booking
         const [[providerRow]] = await db.query(
-        `SELECT u.email, u.name as provider_name, sl.title 
-        FROM service_listings sl
-        JOIN users u ON sl.provider_id = u.id
-        WHERE sl.id = ?`,
-        [listingId]
+            `SELECT u.email, u.name as provider_name, sl.title 
+            FROM service_listings sl
+            JOIN users u ON sl.provider_id = u.id
+            WHERE sl.id = ?`,
+            [listingId]
         );
 
         await db.query(
