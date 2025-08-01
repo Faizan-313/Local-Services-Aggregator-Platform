@@ -39,8 +39,11 @@ function ProviderDashboard() {
         // console.log("Fetched reviews data:", data)
         setTotalReviews(data.totalReviews || 0)
         setAvgRating(
-          typeof data.avgRating === "number" ? data.avgRating.toFixed(1) : "0.0"
+          data.avgRating !== null && !isNaN(data.avgRating)
+            ? Number(data.avgRating).toFixed(1)
+            : "0.0"
         )
+
       } catch (err) {
         console.error("Error fetching reviews stats:", err)
       }
