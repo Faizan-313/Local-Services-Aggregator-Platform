@@ -30,7 +30,7 @@ function ProviderDashboard() {
       try {
         console.log("Fetching reviews stats for provider...")
         const res = await fetchWithAuth(
-          `${import.meta.env.VITE_SERVER_API_URL}/reviews/provider`,
+          `${import.meta.env.VITE_SERVER_API_URL}/provider`,
           { credentials: "include" }
         )
         // console.log(`${import.meta.env.VITE_SERVER_API_URL}/reviews/provider`,)

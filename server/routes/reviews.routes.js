@@ -11,7 +11,7 @@ router.post("/reviews", protect(["customer"]), addOrUpdateReview);
 router.get("/reviews/:listingId", getListingReviews);
 
 //get all rewiews for provider
-router.get("/reviews/provider", protect(['provider']), getProviderReviewsStats);
+router.get("/provider", protect(['provider']), getProviderReviewsStats);
 
 
 export default router;
